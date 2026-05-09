@@ -1,0 +1,124 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function userData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isAppAdmin() {
+      return signedIn() && userData().app_admin == true;
+    }
+
+    function isGroupAdmin(groupId) {
+      return signedIn() &&
+        get(/databases/$(database)/documents/groups/$(groupId)).data.owner_id == request.auth.uid;
+    }
+
+    function isGroupMember(groupId) {
+      return signedIn() &&
+        exists(
+          /databases/$(database)/documents/group_memberships/$(groupId + '_' + request.auth.uid)
+        );
+    }
+
+    function inviteMatchesGroup(code, groupId) {
+      return exists(/databases/$(database)/documents/group_invites/$(code)) &&
+        get(/databases/$(database)/documents/group_invites/$(code)).data.group_id == groupId &&
+        get(/databases/$(database)/documents/group_invites/$(code)).data.active == true;
+    }
+
+    match /users/{userId} {
+      allow read: if signedIn() && (request.auth.uid == userId || isAppAdmin());
+      allow create: if signedIn() && request.auth.uid == userId;
+      allow update: if signedIn() && (request.auth.uid == userId || isAppAdmin());
+      allow delete: if signedIn() && (request.auth.uid == userId || isAppAdmin());
+    }
+
+    match /groups/{groupId} {
+      allow read: if signedIn() &&
+        (resource.data.owner_id == request.auth.uid || isAppAdmin() || isGroupMember(groupId));
+      allow create: if signedIn() &&
+        (request.resource.data.owner_id == request.auth.uid || isAppAdmin());
+      allow update, delete: if signedIn() &&
+        (resource.data.owner_id == request.auth.uid || isAppAdmin());
+    }
+
+    match /group_invites/{code} {
+      allow get: if signedIn();
+      allow list: if false;
+      allow create: if signedIn() &&
+        (
+          isAppAdmin() ||
+          isGroupAdmin(request.resource.data.group_id) ||
+          request.resource.data.created_by == request.auth.uid
+        );
+      allow update, delete: if signedIn() &&
+        (
+          isAppAdmin() ||
+          isGroupAdmin(resource.data.group_id) ||
+          resource.data.created_by == request.auth.uid
+        );
+    }
+
+    match /group_memberships/{membershipId} {
+      allow read: if signedIn() &&
+        (request.auth.uid == resource.data.user_id ||
+         isGroupAdmin(resource.data.group_id) ||
+         isAppAdmin());
+      allow create: if signedIn() &&
+        request.resource.data.user_id == request.auth.uid &&
+        inviteMatchesGroup(request.resource.data.join_code, request.resource.data.group_id);
+      allow update, delete: if signedIn() &&
+        (request.auth.uid == resource.data.user_id ||
+         isGroupAdmin(resource.data.group_id) ||
+         isAppAdmin());
+    }
+
+    match /vehicles/{vehicleId} {
+      allow read: if signedIn() &&
+        (resource.data.owner_id == request.auth.uid ||
+         isGroupMember(resource.data.group_id) ||
+         isGroupAdmin(resource.data.group_id) ||
+         isAppAdmin());
+      allow create: if signedIn() &&
+        (request.resource.data.owner_id == request.auth.uid ||
+         isGroupAdmin(request.resource.data.group_id) ||
+         isAppAdmin());
+      allow update, delete: if signedIn() &&
+        (resource.data.owner_id == request.auth.uid ||
+         isGroupAdmin(resource.data.group_id) ||
+         isAppAdmin());
+    }
+
+    match /charging_sessions/{sessionId} {
+      allow create: if signedIn() &&
+        (isGroupMember(request.resource.data.group_id) ||
+         isGroupAdmin(request.resource.data.group_id) ||
+         isAppAdmin());
+      allow read, update, delete: if signedIn() &&
+        (isGroupMember(resource.data.group_id) ||
+         isGroupAdmin(resource.data.group_id) ||
+         isAppAdmin());
+    }
+
+    match /queue/{queueId} {
+      allow create: if signedIn() &&
+        (isGroupMember(request.resource.data.group_id) ||
+         isGroupAdmin(request.resource.data.group_id) ||
+         isAppAdmin());
+      allow read, update, delete: if signedIn() &&
+        (isGroupMember(resource.data.group_id) ||
+         isGroupAdmin(resource.data.group_id) ||
+         isAppAdmin());
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

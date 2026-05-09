@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "49471277644",
+    "project_id": "carregou-meu-carro",
+    "storage_bucket": "carregou-meu-carro.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:49471277644:android:1bae935c729ed264cd42e9",
+        "android_client_info": {
+          "package_name": "com.example.carregou"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "49471277644-c0reau184didodjb40oit4ibqf3eacml.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBUzdDPEZrIH1UX56cAc0TtgRUqHOWBF-Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "49471277644-c0reau184didodjb40oit4ibqf3eacml.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "49471277644-61hpitt855sl3a2s3f61q01kson1373t.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.carregou"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:49471277644:android:1a5c6086e8ca839acd42e9",
+        "android_client_info": {
+          "package_name": "com.salles.carregou"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "49471277644-c0reau184didodjb40oit4ibqf3eacml.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBUzdDPEZrIH1UX56cAc0TtgRUqHOWBF-Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "49471277644-c0reau184didodjb40oit4ibqf3eacml.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "49471277644-61hpitt855sl3a2s3f61q01kson1373t.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.carregou"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
